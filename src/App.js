@@ -10,6 +10,7 @@ import {
   Grid,
   CircularProgress,
   Box,
+  Skeleton,
 } from "@mui/material";
 import { fetchPosts } from "./api";
 import Pagination from "@mui/material/Pagination";
@@ -31,6 +32,10 @@ const App = () => {
       setLoading(false);
     };
     getPosts();
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 8000); // Show skeleton for 8 seconds
+    return () => clearTimeout(timer); // Cleanup the timer on component unmount
   }, []);
 
   const handleSearch = (event) => {
@@ -57,9 +62,14 @@ const App = () => {
     height: "250px", // fixed height
     width: "100%", // full width of its container
     overflow: "hidden",
-    transition: "transform 0.3s",
+    transition: "transform 0.3s, box-shadow 0.3s",
+    background: "rgba(255, 255, 255, 0.8)", // semi-transparent background
+    backdropFilter: "blur(10px)", // blur effect
+    borderRadius: "15px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
     "&:hover": {
       transform: "scale(1.05)",
+      boxShadow: "0 8px 16px rgba(0, 0, 0, 0.3)",
     },
   };
 
@@ -88,7 +98,7 @@ const App = () => {
   const HoverCard = styled(Card)(cardStyles);
 
   return (
-    <Container>
+    <Container style={{ marginTop: "20px" }}>
       <TextField
         label="Search by title"
         variant="outlined"
@@ -98,8 +108,26 @@ const App = () => {
         onChange={handleSearch}
       />
       {loading ? (
-        <Grid container justifyContent="center">
-          <CircularProgress />
+        <Grid container spacing={2}>
+          {Array.from(new Array(10)).map((_, index) => (
+            <Grid item xs={12} sm={6} md={4} key={index}>
+              <Card style={cardStyles}>
+                <CardContent>
+                  <Skeleton variant="circular" width={40} height={40} />
+                  <Skeleton
+                    variant="text"
+                    width="60%"
+                    height={30}
+                    style={{ marginBottom: 16 }}
+                  />
+                  <Skeleton variant="text" width="100%" height={20} />
+                  <Skeleton variant="text" width="100%" height={20} />
+                  <Skeleton variant="text" width="100%" height={20} />
+                  <Skeleton variant="text" width="100%" height={20} />
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
         </Grid>
       ) : (
         <>
